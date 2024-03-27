@@ -1,0 +1,51 @@
+package com.assignment.Service;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import org.springframework.stereotype.Service;
+
+import com.assignment.Entity.Story;
+
+@Service
+public class DataExtract {
+
+	public static List<Story> dataExtract() {
+		List<Story> details = new ArrayList<>();
+		try {
+			// Connect to the webpage and get the HTML content
+			Document doc = Jsoup.connect("https://time.com").get();
+
+			// Extract elements with class "swipe-h" (or any other relevant class)
+			Elements stories = doc.getElementsByTag("ul");
+			int count = 0;
+			// Iterate over the extracted elements and extract data
+
+			for (Element story : stories) {
+				// Extract title
+				String title = story.getElementsByClass("time-to-read").text();
+
+				// Extract link
+				String link = story.getElementsByTag("a").attr("href");
+
+				Story st = new Story();
+				st.setLink(link);
+				st.setTitle(title);
+				details.add(st);
+				if (count == 6) {
+					break;
+				}
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return details;
+	}
+
+}
